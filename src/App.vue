@@ -3,12 +3,17 @@
 </template>
 
 <style lang="scss">
+html, body {
+  height: -webkit-fill-available;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: -webkit-fill-available;
 }
 
 #nav {

@@ -1,34 +1,43 @@
 <template>
-  <div class="home">
-    <h1>ToDo App</h1>
-    <form @submit.prevent="addTodo()">
-        <label>New ToDo </label>
-        <input
-            v-model="newTodo"
-            name="newTodo"
-            autocomplete="off"
-        >
-        <button>Add ToDo</button>
-    </form>
-    <h2>ToDo List</h2>
-    <ul>
-        <li
-            v-for="(todo, index) in todos"
-            :key="index"
-        >
-            <span
-                :class="{ done: todo.done }"
-                @click="doneTodo(todo)"
-            >{{ todo.content }}</span>
-            <button @click="removeTodo(index)">Remove</button>
-        </li>
-    </ul>
-    <h4 v-if="todos.length === 0">Empty list.</h4>
-  </div>
+    <div class="home">
+        <n-card title="✔️ ToDo App" embedded>
+            <template #default> 
+                <n-input placeholder="ToDo" @change="addTodo">
+                    <template #prefix>
+                        <n-icon>
+                            <add-circle-icon />
+                        </n-icon>
+                    </template>
+                </n-input> 
+                <n-scrollbar style="max-height: 300px">
+                    <n-list bordered>
+                        <n-list-item v-for="(todo, index) in todos" :key="index">
+                            <n-thing>
+                                <div class="li-content">
+                                    <n-checkbox v-model:checked="todo.done" />
+                                    <span :class="{'todo-done' : todo.done}">{{ todo.content }}</span>
+                                    <n-button type="error" ghost @click="removeTodo(index)">
+                                        <template #icon>
+                                            <n-icon>
+                                                <trash-icon />
+                                            </n-icon>
+                                        </template>
+                                    </n-button>
+                                </div>
+                            </n-thing>
+                        </n-list-item>
+                        <h4 v-if="todos.length === 0">Empty list.</h4>
+                    </n-list>
+                </n-scrollbar>   
+            </template>
+        </n-card>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { AddCircleOutline as AddCircleIcon } from '@vicons/ionicons5'
+import { Trash as TrashIcon } from '@vicons/ionicons5'
 
 interface Todo {
   content: string,
@@ -38,9 +47,10 @@ interface Todo {
 export default defineComponent({
   name: 'Home',
   components: {
+      AddCircleIcon,
+      TrashIcon
   },
   setup () {
-    const newTodo = ref('');
     const defaultData = JSON.stringify([{
         done: false,
         content: 'Write a blog post'
@@ -49,13 +59,13 @@ export default defineComponent({
     const todosData = JSON.parse(localStorage.getItem('todos') || defaultData);
     const todos = ref(todosData);
     
-    function addTodo () {
-        if (newTodo.value) {
+    function addTodo (todoValue : string) {
+        if (todoValue) {
             todos.value.push({
                 done: false,
-                content: newTodo.value
+                content: todoValue
             });
-            newTodo.value = '';
+            todoValue = '';
         }
         saveData();
     }
@@ -73,7 +83,6 @@ export default defineComponent({
     }
     return {
         todos,
-        newTodo,
         addTodo,
         doneTodo,
         removeTodo,
@@ -82,3 +91,25 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+.home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: -webkit-fill-available;
+}
+
+.n-card {
+  max-width: 300px;
+}
+
+.todo-done {
+    text-decoration:line-through;
+}
+
+.li-content {
+    display: flex;
+    justify-content: space-between;
+}
+</style>
